@@ -24,61 +24,43 @@ const ContactPage = () => {
     setErrors((prev) => ({ ...prev, [name]: "", general: "" }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  let hasError = false;
-  const newErrors = {
-    name: "",
-    email: "",
-    mobile: "",
-    message: "",
-    general: "",
-  };
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-  if (!formData.name.trim()) {
-    newErrors.name = "Name is required";
-    hasError = true;
-  }
-  if (!formData.email.trim()) {
-    newErrors.email = "Email is required";
-    hasError = true;
-  }
-  if (!formData.mobile.trim()) {
-    newErrors.mobile = "Mobile number is required";
-    hasError = true;
-  }
-  if (!formData.message.trim()) {
-    newErrors.message = "Message is required";
-    hasError = true;
-  }
+    // use values from state
+    const { name, email, mobile, message } = formData;
 
-  if (hasError) {
-    setErrors(newErrors);
-    return;
-  }
-
-  try {
-    // change POST URL to backend route
-    const base = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
-    const res = await fetch(`${base}/api/contact/send-message`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, mobile, message }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Message sent! Thank you.");
-      setFormData({ name: "", email: "", mobile: "", message: "" });
-    } else {
-      setErrors((prev) => ({ ...prev, general: data.error || "Failed to send message." }));
+    // basic client validation
+    if (!name || !email || !message) {
+      setErrors((prev) => ({
+        ...prev,
+        general: "Name, email and message are required",
+      }));
+      return;
     }
-  } catch (err) {
-    setErrors((prev) => ({ ...prev, general: "Server error. Try again later." }));
+
+    const body = { name, email, mobile, message };
+
+    try {
+      const res = await fetch("http://localhost:3001/api/contact/send-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || data.message || "Request failed");
+
+      console.log("Sent:", data);
+      // reset form on success
+      setFormData({ name: "", email: "", mobile: "", message: "" });
+      setErrors({ name: "", email: "", mobile: "", message: "", general: "" });
+      alert("Message sent");
+    } catch (err) {
+      console.error("Contact form error:", err);
+      setErrors((prev) => ({ ...prev, general: err.message || "Failed to send message" }));
+    }
   }
-};
 
   // Shared classes for inputs and textarea
   const inputBaseClasses =
@@ -248,13 +230,13 @@ const ContactPage = () => {
             href="mailto:rawatvijaysingh964@gmail.com"
             className="hover:underline"
           >
-           saurabhsinghdosad20@gmail.com
+            22bca0036@gmail.com
           </a>
         </div>
         <div className="flex items-center gap-4 text-gray-700 dark:text-gray-200 text-lg">
           <span className="text-2xl">📞</span>
           <a href="tel:+918006106542" className="hover:underline">
-           7895072404
+            7895072404
           </a>
         </div>
       </motion.div>
