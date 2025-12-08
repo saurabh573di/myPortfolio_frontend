@@ -9,6 +9,8 @@ const HireMeModal = ({ isOpen, onClose }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
 
   if (!isOpen) return null;
 
@@ -17,7 +19,7 @@ const HireMeModal = ({ isOpen, onClose }) => {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const { name, email, projectType, description } = form;
@@ -34,27 +36,33 @@ const HireMeModal = ({ isOpen, onClose }) => {
       return;
     }
 
+    setLoading(true);
+    setSuccessMsg("");
+
     const base = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-    fetch(`${base}/api/hire`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, projectType, description }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          alert("✅ Request sent successfully!");
-          setForm({ name: "", email: "", projectType: "", description: "" });
-          onClose();
-        } else {
-          alert("❌ Failed to send request.");
-        }
-      })
-      .catch((err) => {
-        console.error("Backend error:", err);
-        alert("❌ Server error. Try again.");
+    try {
+      const res = await fetch(`${base}/api/hire`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, projectType, description }),
       });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Request failed");
+      }
+
+      setSuccessMsg("✅ Request sent successfully!");
+      setForm({ name: "", email: "", projectType: "", description: "" });
+
+    } catch (err) {
+      console.error("Backend error:", err);
+      setErrors({ form: err.message || "Server error. Try again." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,6 +74,9 @@ const HireMeModal = ({ isOpen, onClose }) => {
         <h2 className="text-2xl font-bold text-center text-black dark:text-white mb-6">
           Hire Me
         </h2>
+
+        {successMsg && <p className="text-green-500 text-center mb-4">{successMsg}</p>}
+        {errors.form && <p className="text-red-500 text-center mb-4">{errors.form}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name Field */}
@@ -79,9 +90,7 @@ const HireMeModal = ({ isOpen, onClose }) => {
               className="w-full p-2 border rounded-md"
               placeholder="Your Name"
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-            )}
+            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
 
           {/* Email Field */}
@@ -95,9 +104,7 @@ const HireMeModal = ({ isOpen, onClose }) => {
               className="w-full p-2 border rounded-md"
               placeholder="Your Email"
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
           {/* Project Type Field */}
@@ -116,9 +123,7 @@ const HireMeModal = ({ isOpen, onClose }) => {
               <option>Full Stack Development</option>
               <option>Other</option>
             </select>
-            {errors.projectType && (
-              <p className="text-red-500 text-sm mt-1">{errors.projectType}</p>
-            )}
+            {errors.projectType && <p className="text-red-500 text-sm mt-1">{errors.projectType}</p>}
           </div>
 
           {/* Project Description Field */}
@@ -130,35 +135,30 @@ const HireMeModal = ({ isOpen, onClose }) => {
               onChange={handleChange}
               rows="3"
               placeholder="Brief description..."
-              className="w-full p-2 border rounded-md pointer-events-auto relative z-50"
+              className="w-full p-2 border rounded-md"
             />
-            {errors.description && (
-              <p className="text-red-500 text-sm mt-1">{errors.description}</p>
-            )}
+            {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-col mt-10 space-y-12">
-            {/* Send Request Button on left */}
-            <div className="self-start">
-              <button
-                type="submit"
-                className="text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-              >
-                Send Request
-              </button>
-            </div>
+          <div className="flex flex-col mt-10 space-y-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className={`text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Sending..." : "Send Request"}
+            </button>
 
-            {/* Cancel Button on right */}
-            <div className="self-end">
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-              >
-                Cancel
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>

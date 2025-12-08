@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import emailjs from "emailjs-com";
-import { motion } from "framer-motion"; // Add this import
+import { motion } from "framer-motion";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -18,33 +17,61 @@ const ContactPage = () => {
     general: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "", general: "" }));
   };
 
-  async function handleSubmit(e) {
+  const base = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, mobile, message } = formData; // make sure formData state is used
+    const { name, email, mobile, message } = formData;
+
+    // Basic validation
+    const newErrors = {};
+    if (!name) newErrors.name = "⚠️ Please enter your name.";
+    if (!email) newErrors.email = "⚠️ Please enter your email.";
+    if (!message) newErrors.message = "⚠️ Please enter your message.";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors((prev) => ({ ...prev, ...newErrors }));
+      return;
+    }
 
     try {
-      const res = await fetch("http://localhost:3001/api/contact/send-message", {
+      setLoading(true);
+
+      const res = await fetch(`${base}/api/contact/send-message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, mobile, message }),
       });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || data.message || "Request failed");
-      // success handling
-      console.log("Contact sent:", data);
-      alert("sent succesfully")
+      setLoading(false);
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || data.message || "Request failed");
+      }
+
+      setSuccessMsg("✅ Message sent successfully!");
       setFormData({ name: "", email: "", mobile: "", message: "" });
+
+      setTimeout(() => setSuccessMsg(""), 3000); // hide after 3 sec
     } catch (err) {
       console.error("Contact form error:", err);
-      // show error to user
+      setLoading(false);
+      setErrors((prev) => ({
+        ...prev,
+        general: err.message || "Something went wrong!",
+      }));
     }
-  }
+  };
 
   // Shared classes for inputs and textarea
   const inputBaseClasses =
@@ -78,12 +105,12 @@ const ContactPage = () => {
           Contact Form
         </h2>
 
+        {successMsg && <p className="text-green-500 text-center mb-4">{successMsg}</p>}
+        {errors.general && <p className="text-red-500 text-center mb-4">{errors.general}</p>}
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
           {/* Name */}
-          <label
-            htmlFor="name"
-            className="font-semibold text-gray-700 dark:text-gray-200 mb-1"
-          >
+          <label htmlFor="name" className="font-semibold text-gray-700 dark:text-gray-200 mb-1">
             Name
           </label>
           <input
@@ -93,22 +120,13 @@ const ContactPage = () => {
             placeholder="Name"
             value={formData.name}
             onChange={handleChange}
-            className={`${inputBaseClasses} ${
-              errors.name
-                ? "border-red-500 shadow-red-500/80"
-                : "border-gray-400 dark:border-gray-600"
-            } ${glowingShadow}`}
+            className={`${inputBaseClasses} ${errors.name ? "border-red-500 shadow-red-500/80" : "border-gray-400 dark:border-gray-600"} ${glowingShadow}`}
             autoComplete="off"
           />
-          {errors.name && (
-            <span className="text-red-500 text-sm">{errors.name}</span>
-          )}
+          {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
 
           {/* Email */}
-          <label
-            htmlFor="email"
-            className="font-semibold text-gray-700 dark:text-gray-200 mb-1"
-          >
+          <label htmlFor="email" className="font-semibold text-gray-700 dark:text-gray-200 mb-1">
             Email ID
           </label>
           <input
@@ -118,22 +136,13 @@ const ContactPage = () => {
             placeholder="Email ID"
             value={formData.email}
             onChange={handleChange}
-            className={`${inputBaseClasses} ${
-              errors.email
-                ? "border-red-500 shadow-red-500/80"
-                : "border-gray-400 dark:border-gray-600"
-            } ${glowingShadow}`}
+            className={`${inputBaseClasses} ${errors.email ? "border-red-500 shadow-red-500/80" : "border-gray-400 dark:border-gray-600"} ${glowingShadow}`}
             autoComplete="off"
           />
-          {errors.email && (
-            <span className="text-red-500 text-sm">{errors.email}</span>
-          )}
+          {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
 
           {/* Mobile */}
-          <label
-            htmlFor="mobile"
-            className="font-semibold text-gray-700 dark:text-gray-200 mb-1"
-          >
+          <label htmlFor="mobile" className="font-semibold text-gray-700 dark:text-gray-200 mb-1">
             Mobile Number
           </label>
           <input
@@ -145,22 +154,13 @@ const ContactPage = () => {
             onChange={handleChange}
             pattern="[0-9]{10}"
             title="Enter 10 digit mobile number"
-            className={`${inputBaseClasses} ${
-              errors.mobile
-                ? "border-red-500 shadow-red-500/80"
-                : "border-gray-400 dark:border-gray-600"
-            } ${glowingShadow}`}
+            className={`${inputBaseClasses} ${errors.mobile ? "border-red-500 shadow-red-500/80" : "border-gray-400 dark:border-gray-600"} ${glowingShadow}`}
             autoComplete="off"
           />
-          {errors.mobile && (
-            <span className="text-red-500 text-sm">{errors.mobile}</span>
-          )}
+          {errors.mobile && <span className="text-red-500 text-sm">{errors.mobile}</span>}
 
           {/* Message */}
-          <label
-            htmlFor="message"
-            className="font-semibold text-gray-700 dark:text-gray-200 mb-1"
-          >
+          <label htmlFor="message" className="font-semibold text-gray-700 dark:text-gray-200 mb-1">
             Message
           </label>
           <textarea
@@ -170,26 +170,17 @@ const ContactPage = () => {
             rows="5"
             value={formData.message}
             onChange={handleChange}
-            className={`${inputBaseClasses} ${
-              errors.message
-                ? "border-red-500 shadow-red-500/80"
-                : "border-gray-400 dark:border-gray-600"
-            } ${glowingShadow} resize-none`}
+            className={`${inputBaseClasses} ${errors.message ? "border-red-500 shadow-red-500/80" : "border-gray-400 dark:border-gray-600"} ${glowingShadow} resize-none`}
           ></textarea>
-          {errors.message && (
-            <span className="text-red-500 text-sm">{errors.message}</span>
-          )}
-
-          {errors.general && (
-            <small className="text-red-500 -mt-2">{errors.general}</small>
-          )}
+          {errors.message && <span className="text-red-500 text-sm">{errors.message}</span>}
 
           {/* Submit */}
           <button
             type="submit"
+            disabled={loading}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded transition"
           >
-            Send Message
+            {loading ? "Sending..." : "Send Message"}
           </button>
         </form>
       </motion.div>
@@ -210,10 +201,7 @@ const ContactPage = () => {
         </div>
         <div className="flex items-center gap-4 text-gray-700 dark:text-gray-200 text-lg">
           <span className="text-2xl">📧</span>
-          <a
-            href="mailto:rawatvijaysingh964@gmail.com"
-            className="hover:underline"
-          >
+          <a href="mailto:rawatvijaysingh964@gmail.com" className="hover:underline">
             22bca0036@gmail.com
           </a>
         </div>
