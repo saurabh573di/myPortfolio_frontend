@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 
 const ContactPage = () => {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     mobile: "",
     message: "",
   });
-
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -16,7 +17,6 @@ const ContactPage = () => {
     message: "",
     general: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
@@ -26,10 +26,10 @@ const ContactPage = () => {
     setErrors((prev) => ({ ...prev, [name]: "", general: "" }));
   };
 
-  const base = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     const { name, email, mobile, message } = formData;
 
     // Basic validation
@@ -40,16 +40,15 @@ const ContactPage = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors((prev) => ({ ...prev, ...newErrors }));
+      setLoading(false);
       return;
     }
 
     try {
-      setLoading(true);
-
-      const res = await fetch(`${base}/api/contact/send-message`, {
+      const res = await fetch(`${API_URL}/api/contact/send-message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, mobile, message }),
+        body: JSON.stringify({ name, email, message, mobile }),
       });
 
       const data = await res.json();
