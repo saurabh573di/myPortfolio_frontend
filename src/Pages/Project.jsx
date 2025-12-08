@@ -9,7 +9,7 @@ const projects = [
     category: "Web Development",
     description: "using React and Tailwind CSS  and json server a crud app ..",
     imageUrl:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80",
+      "e.jpeg",
   },
   {
     id: 2,
@@ -17,18 +17,9 @@ const projects = [
     category: "web devlopment",
     description: "A React and tailwind website.",
     imageUrl:
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80",
+      "a.jpeg",
   },
-  {
-    id: 3,
-    name: "Project Three",
-    category: "Web Development",
-    description:
-      "An e-commerce site with cart, login, and payment features using MERN stack.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
-  },
-  
+ 
 ];
 
 const ProjectsPage = () => {

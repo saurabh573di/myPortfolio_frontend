@@ -15,9 +15,14 @@ const projects = [
   name: " CRUD App",
   roles: ["Frontend"],
   photos: [
-    "https://images.unsplash.com/photo-1591012911202-0d4b6e44b0b2?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1581091012184-1a2c8c06f0d7?auto=format&fit=crop&w=800&q=80"
-  ],
+    "/e.jpeg",
+     "/j.jpeg",
+      "/f.jpeg",
+       "/h.jpeg",
+        "/i.jpeg",
+        
+
+],
   overview: `A frontend CRUD application for managing employee records, developed using React and Tailwind CSS with JSON Server as a mock backend. Users can register, login, manage employee records, and logout.`,
   details: `🔐 User Authentication:
 Login and signup with session-based authentication using local state.
@@ -43,7 +48,10 @@ Mobile-first responsive UI using Tailwind CSS.`,
     name: "My Portfolio",
     roles: ["Frontend"],
     photos: [
-      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+     "/a.jpeg",
+     "/a2.jpeg",
+     "/c.jpeg",
+     "/d.jpeg"
     ],
     overview: `My Portfolio is a personal website built to showcase my skills, projects, and professional experience. It highlights my journey as a developer with an intuitive and responsive design.`,
     details: `🌟 Showcase Projects:
@@ -72,26 +80,7 @@ Smooth animations and transitions,
 Social media and contact integration.`,
   },
 
-  {
-    id: 3,
-    name: "Project Three",
-    roles: ["Frontend"],
-    photos: [
-      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
-    ],
-    overview: `DevFinder is a GitHub user finder app that fetches public user data using GitHub API.`,
-    details: `🔎 Search GitHub Users:
-Live search with username.
 
-📊 View User Stats:
-Followers, repos, following, etc.
-
-🌐 API Integration:
-Uses GitHub public API.`,
-    tools: "React.js, Tailwind CSS, GitHub API",
-    futureImprovements: "Add dark mode toggle, rate limit handling, search history.",
-    keyFeatures: "API integration, live search, user profile view.",
-  },
 
  
 ];
