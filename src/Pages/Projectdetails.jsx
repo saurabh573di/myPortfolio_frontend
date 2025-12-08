@@ -10,37 +10,33 @@ const roleIcons = {
 };
 
 const projects = [
-  {
-    id: 1,
-    name: "Better Home",
-    roles: ["Frontend", "Backend"],
-    photos: [
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-    ],
-    overview: `Better Home is a full-stack web application developed using React, Tailwind CSS, Node.js, and MongoDB. The platform serves as a home, PG, hotel, and mess booking system for students and professionals.`,
-    details: `🔐 User Authentication:
-Secure registration and login using JWT/session-based authentication.
+ {
+  id: 1,
+  name: " CRUD App",
+  roles: ["Frontend"],
+  photos: [
+    "https://images.unsplash.com/photo-1591012911202-0d4b6e44b0b2?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1581091012184-1a2c8c06f0d7?auto=format&fit=crop&w=800&q=80"
+  ],
+  overview: `A frontend CRUD application for managing employee records, developed using React and Tailwind CSS with JSON Server as a mock backend. Users can register, login, manage employee records, and logout.`,
+  details: `🔐 User Authentication:
+Login and signup with session-based authentication using local state.
 
-🏠 Listing Management:
-CRUD operations for property listings like PGs, mess, homes.
+👤 Employee Management:
+Create, Read, Update, and Delete employee records through JSON Server.
 
-🔍 Real-Time Search:
-Filter by name, location, or category.
-
-🖼️ Image Uploads:
-Add multiple photos per listing.
-
-📍 Location-Based Search:
-Search by user's area or dropdown.
+🚪 Logout:
+Secure logout to end user sessions.
 
 📱 Responsive Design:
-Mobile-first, responsive UI.`,
-    tools: "React.js, Node.js, Express, MongoDB, Tailwind CSS",
-    futureImprovements:
-      "Add mobile app, real-time chat with owners, payment gateway integration.",
-    keyFeatures: "Search by area/category, booking system, secure login, responsive UI.",
-  },
+Mobile-first responsive UI using Tailwind CSS.`,
+
+  tools: "React.js, JSON Server, Tailwind CSS",
+  futureImprovements:
+    "Add search and filter employees, implement sorting, and add form validations.",
+  keyFeatures: "Login/Signup, CRUD operations for employees, Logout, Responsive UI, JSON Server integration."
+}
+,
 
   {
     id: 2,

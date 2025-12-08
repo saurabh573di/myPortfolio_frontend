@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 const projects = [
   {
     id: 1,
-    name: "Better Home",
-    category: "Full Stack Web Development",
-    description: "using React and Tailwind CSS for a Booking Website.",
+    name: " CRUD App",
+    category: "Web Development",
+    description: "using React and Tailwind CSS  and json server a crud app ..",
     imageUrl:
       "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80",
   },

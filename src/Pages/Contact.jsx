@@ -26,39 +26,23 @@ const ContactPage = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    // use values from state
-    const { name, email, mobile, message } = formData;
-
-    // basic client validation
-    if (!name || !email || !message) {
-      setErrors((prev) => ({
-        ...prev,
-        general: "Name, email and message are required",
-      }));
-      return;
-    }
-
-    const body = { name, email, mobile, message };
+    const { name, email, mobile, message } = formData; // make sure formData state is used
 
     try {
       const res = await fetch("http://localhost:3001/api/contact/send-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ name, email, mobile, message }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || data.message || "Request failed");
-
-      console.log("Sent:", data);
-      // reset form on success
+      // success handling
+      console.log("Contact sent:", data);
+      alert("sent succesfully")
       setFormData({ name: "", email: "", mobile: "", message: "" });
-      setErrors({ name: "", email: "", mobile: "", message: "", general: "" });
-      alert("Message sent");
     } catch (err) {
       console.error("Contact form error:", err);
-      setErrors((prev) => ({ ...prev, general: err.message || "Failed to send message" }));
+      // show error to user
     }
   }
 

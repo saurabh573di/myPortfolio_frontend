@@ -109,7 +109,7 @@ const Hero = () => {
           A Full-Stack Developer
         </h2>
         <a
-          href="/cv.pdf"
+          href="/cv.docx"
           download
           className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 font-semibold px-6 py-4 text-lg rounded-lg shadow hover:bg-indigo-200 dark:bg-gray-800 dark:text-indigo-200 dark:hover:bg-gray-700 transition"
         >
