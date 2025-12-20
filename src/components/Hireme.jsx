@@ -1,7 +1,7 @@
 import React, { useState } from "react";
+import api from "../utils/api";
 
 const HireMeModal = ({ isOpen, onClose }) => {
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
   
   const [form, setForm] = useState({
     name: "",
@@ -42,25 +42,17 @@ const HireMeModal = ({ isOpen, onClose }) => {
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`${API_URL}/api/hire/send-request`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, projectType, description }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "Request failed");
+      const res = await api.post('/api/hire/send-request', { name, email, projectType, description });
+      if (!res || res.status !== 200 || !res.data || !res.data.success) {
+        throw new Error((res && res.data && (res.data.error || res.data.message)) || 'Request failed');
       }
 
-      setSuccessMsg("✅ Request sent successfully!");
-      setForm({ name: "", email: "", projectType: "", description: "" });
+      setSuccessMsg('✅ Request sent successfully!');
+      setForm({ name: '', email: '', projectType: '', description: '' });
       setTimeout(() => onClose(), 2000);
-
     } catch (err) {
-      console.error("Hire form error:", err);
-      setErrors({ form: err.message || "Server error. Try again." });
+      console.error('Hire form error:', err);
+      setErrors({ form: err.message || 'Server error. Try again.' });
     } finally {
       setLoading(false);
     }

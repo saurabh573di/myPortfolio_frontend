@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import api from "../utils/api";
 
 const ContactPage = () => {
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -45,30 +45,20 @@ const ContactPage = () => {
     }
 
     try {
-      const res = await fetch(`${API_URL}/api/contact/send-message`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message, mobile }),
-      });
-
-      const data = await res.json();
+      const res = await api.post('/api/contact/send-message', { name, email, message, mobile });
       setLoading(false);
 
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || data.message || "Request failed");
+      if (!res || res.status !== 200 || !res.data || !res.data.success) {
+        throw new Error((res && res.data && (res.data.error || res.data.message)) || 'Failed to send message');
       }
 
-      setSuccessMsg("✅ Message sent successfully!");
-      setFormData({ name: "", email: "", mobile: "", message: "" });
-
-      setTimeout(() => setSuccessMsg(""), 3000); // hide after 3 sec
+      setSuccessMsg('✅ Message sent successfully!');
+      setFormData({ name: '', email: '', mobile: '', message: '' });
+      setTimeout(() => setSuccessMsg(''), 3000);
     } catch (err) {
-      console.error("Contact form error:", err);
+      console.error('Contact form error:', err);
       setLoading(false);
-      setErrors((prev) => ({
-        ...prev,
-        general: err.message || "Something went wrong!",
-      }));
+      setErrors((prev) => ({ ...prev, general: err.message || 'Something went wrong!' }));
     }
   };
 
