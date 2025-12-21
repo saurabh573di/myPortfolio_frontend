@@ -4,7 +4,7 @@ const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 const api = axios.create({
   baseURL: BASE,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -31,13 +31,17 @@ api.interceptors.response.use(
       err.data = error.response.data;
       return Promise.reject(err);
     }
-      if (error.request) {
-        // No response was received (network error / CORS / server down)
-        const url = (error.config && (error.config.baseURL || '') + (error.config.url || '')) || 'unknown url';
-        const msg = `No response from server (${url})`;
-        console.error('[API ERROR] No response:', url, error);
-        return Promise.reject(new Error(msg));
+
+    if (error.request) {
+      const cfg = error.config || {};
+      const url = `${cfg.baseURL || ''}${cfg.url || ''}` || 'unknown url';
+      const msg = `No response from server (${url})`;
+      console.error('[API ERROR] No response:', url, error && (error.stack || error));
+      const err = new Error(msg);
+      err.original = error;
+      return Promise.reject(err);
     }
+
     return Promise.reject(error);
   }
 );
